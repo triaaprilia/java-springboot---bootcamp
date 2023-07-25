@@ -4,12 +4,17 @@ import com.bootcamp.test.api.dto.CategoryDto;
 
 import com.bootcamp.test.api.entity.Category;
 import com.bootcamp.test.api.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/category")
@@ -31,13 +36,23 @@ public class CategoryController {
         Category category = this.service.findById(id);
         return ResponseEntity.ok(category);
     }
-
     @PostMapping
-    public ResponseEntity<String> save(
-            @RequestBody CategoryDto.Save data
+    public ResponseEntity<Map<String, Object>> save(
+            @RequestBody @Valid CategoryDto.Save data,
+            BindingResult result
     ){
+        Map<String, Object> output = new HashMap<>();
+        if (result.hasErrors()){
+            Map<String, Object> errors = new HashMap<>();
+            for (FieldError fieldError :  result.getFieldErrors()){
+                errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+            }
+            output.put("status", errors);
+            return ResponseEntity.badRequest().body(output);
+        }
         this.service.save(data);
-        return ResponseEntity.ok("data berhasil diinsert");
+        output.put("status", "Berhasil menambahkan user");
+        return ResponseEntity.ok(output);
     }
 
     @DeleteMapping("/{id}")

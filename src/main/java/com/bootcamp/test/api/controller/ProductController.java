@@ -3,12 +3,17 @@ package com.bootcamp.test.api.controller;
 import com.bootcamp.test.api.dto.ProductDto;
 import com.bootcamp.test.api.entity.Product;
 import com.bootcamp.test.api.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/product")
@@ -32,11 +37,24 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<String> save(
-            @RequestBody ProductDto.Save data
+    public ResponseEntity<Map<String, Object>> save(
+            @RequestBody @Valid ProductDto.Save data,
+            BindingResult result
     ){
+
+        Map<String, Object> output = new HashMap<>();
+        if (result.hasErrors()){
+                Map<String, Object> errors = new HashMap<>();
+                for (FieldError fieldError : result.getFieldErrors()){
+                    errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+
+            }
+            output.put("status", errors);
+                return ResponseEntity.badRequest().body(output);
+        }
         this.service.save(data);
-        return ResponseEntity.ok("data berhasil diinsert");
+        output.put("status", "Berhasil menambah user");
+        return ResponseEntity.ok(output);
     }
 
     @DeleteMapping("/{id}")

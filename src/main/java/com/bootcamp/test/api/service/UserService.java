@@ -3,6 +3,7 @@ package com.bootcamp.test.api.service;
 import com.bootcamp.test.api.dao.UserDao;
 import com.bootcamp.test.api.dto.UsersDto;
 import com.bootcamp.test.api.entity.Users;
+import com.bootcamp.test.api.exception.IdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,8 @@ public class UserService {
     }
 
     public Users findById(Integer id){
-        return this.dao.findById(id).orElseThrow(() -> new RuntimeException("User dengan id" + id + "tidak ditemukan"));
+        return this.dao.findById(id).orElseThrow(() ->
+                new IdNotFoundException("User dengan id " + id + " tidak ditemukan"));
     }
 
     public void delete(Integer id){

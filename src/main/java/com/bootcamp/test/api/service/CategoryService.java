@@ -3,8 +3,8 @@ package com.bootcamp.test.api.service;
 import com.bootcamp.test.api.dao.CategoryDao;
 import com.bootcamp.test.api.dto.CategoryDto;
 import com.bootcamp.test.api.entity.Category;
+import com.bootcamp.test.api.exception.IdNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +20,8 @@ public class CategoryService {
     public List<Category> findAll(){return this.dao.findAll();}
 
     public Category findById(Integer id){
-        return this.dao.findByid(id).orElseThrow(() -> new RuntimeException("Categori dengan id" + id +"tidak ditemukan"));
+        return this.dao.findByid(id).orElseThrow(() ->
+                new IdNotFoundException("Categori dengan id" + id +"tidak ditemukan"));
     }
 
     public void delete(Integer id) {this.dao.delete(id);}
