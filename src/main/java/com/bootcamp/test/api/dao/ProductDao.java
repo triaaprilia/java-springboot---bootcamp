@@ -33,8 +33,10 @@ public class ProductDao {
     }
 
     public List<Product>findAll(){
-        String query = "SELECT id, \"name\", category_id, stock\n" +
-                "FROM public.products;\n";
+        String query = """
+                SELECT p.id, p.name, p.category_id, p.stock, c.name as categoryName
+                FROM public.products p
+                Join category c on  c.id = p.category_id""";
 
         return this.jdbcTemplate.query(query, new RowMapper<Product>() {
             @Override
@@ -42,7 +44,8 @@ public class ProductDao {
                 Product product = new Product();
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("name"));
-                product.setCategory_id(rs.getInt("category_id"));
+                product.setCategoryId(rs.getInt("category_id"));
+                product.setCategoryName(rs.getString("categoryName"));
                 product.setStock(rs.getInt("stock"));
                 return product;
             }
@@ -62,7 +65,7 @@ public class ProductDao {
                     Product product =  new Product();
                     product.setId(rs.getInt("id"));
                     product.setName(rs.getString("name"));
-                    product.setCategory_id(rs.getInt("category_id"));
+                    product.setCategoryId(rs.getInt("category_id"));
                     product.setStock(rs.getInt("stock"));
                     return Optional.of(product);
                 }
